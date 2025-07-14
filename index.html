@@ -13,9 +13,6 @@
       button {
         font-size: 16px;
         min-height: 44px;
-        user-select: none;
-        -webkit-user-select: none; /* For Safari */
-        touch-action: manipulation;
       }
     </style>
   </head>
@@ -32,16 +29,7 @@
       >
       <div class="flex items-center gap-2 mb-4">
         <button
-<<<<<<< Updated upstream
-          onmousedown="startAdjust(-0.1)"
-          onmouseup="stopAdjust(-0.1)"
-          onmouseleave="stopAdjust(-0.1)"
-          ontouchstart="startAdjust(-0.1)"
-          ontouchend="stopAdjust(-0.1)"
-=======
-          id="minus-btn"
-          type="button"
->>>>>>> Stashed changes
+          onclick="adjustDistance(-0.1)"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           −
@@ -57,16 +45,7 @@
         />
 
         <button
-<<<<<<< Updated upstream
-          onmousedown="startAdjust(0.1)"
-          onmouseup="stopAdjust(0.1)"
-          onmouseleave="stopAdjust(0.1)"
-          ontouchstart="startAdjust(0.1)"
-          ontouchend="stopAdjust(0.1)"
-=======
-          id="plus-btn"
-          type="button"
->>>>>>> Stashed changes
+          onclick="adjustDistance(0.1)"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           +
@@ -143,75 +122,18 @@
         input.value = value.toFixed(1);
       }
 
-<<<<<<< Updated upstream
-      let adjustInterval;
-      let adjustTimeout;
-
-      function startAdjust(delta) {
-        // Start a timeout: if held, start interval after 400ms
-        adjustTimeout = setTimeout(() => {
-          adjustInterval = setInterval(() => {
-            adjustDistance(delta);
-          }, 150); // Repeat every 150ms
-        }, 300); // Wait 300ms before starting repeat
-      }
-
-      function stopAdjust(delta) {
-        // If timeout exists, it was a short press: increment once
-        if (adjustTimeout) {
-          clearTimeout(adjustTimeout);
-          adjustDistance(delta);
-          adjustTimeout = null;
-        }
-        clearInterval(adjustInterval);
-      }
-=======
-      // Long press logic for plus/minus buttons
-      function setupLongPress(btnId, delta) {
-        const btn = document.getElementById(btnId);
-        let timer = null;
-        let isLongPress = false;
-
-        const start = (e) => {
-          e.preventDefault();
-          isLongPress = false;
-          timer = setTimeout(() => {
-            isLongPress = true;
-            timer = setInterval(() => adjustDistance(delta), 120);
-          }, 400); // 400ms to start long press
-        };
-
-        const end = (e) => {
-          clearTimeout(timer);
-          clearInterval(timer);
-          if (!isLongPress) {
-            adjustDistance(delta);
-          }
-        };
-
-        btn.addEventListener("mousedown", start);
-        btn.addEventListener("touchstart", start);
-
-        btn.addEventListener("mouseup", end);
-        btn.addEventListener("mouseleave", end);
-        btn.addEventListener("touchend", end);
-        btn.addEventListener("touchcancel", end);
-      }
-
-      setupLongPress("minus-btn", -0.1);
-      setupLongPress("plus-btn", 0.1);
->>>>>>> Stashed changes
-
       // Prevent double-tap to zoom on buttons
       let lastTouchEnd = 0;
       document.addEventListener(
         "touchend",
         function (event) {
-          const now = new Date().getTime();
-          if (now - lastTouchEnd <= 300) {
-            event.preventDefault();
+          if (event.target.tagName === "BUTTON") {
+            const now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) {
+              event.preventDefault();
+            }
+            lastTouchEnd = now;
           }
-          lastTouchEnd = now;
         },
         false
       );
