@@ -133,31 +133,19 @@
         const hoursNeeded = distance / speed;
         const arrival = new Date(now.getTime() + hoursNeeded * 60 * 60 * 1000);
 
-        const hh = String(arrival.getHours()).padStart(2, "0");
-        const mm = String(arrival.getMinutes()).padStart(2, "0");
-
         let extraTime = 0;
         if (document.getElementById("add-time-checkbox").checked) {
           extraTime =
             parseInt(document.getElementById("extra-minutes").value) || 0;
+          arrival.setMinutes(arrival.getMinutes() + extraTime); // <-- add this line
         }
 
-        const totalMinutes = hoursNeeded * 60 + extraTime;
-        const totalHours = Math.floor(totalMinutes / 60);
-        const finalMinutes = totalMinutes % 60;
-
-        const finalHH = String(arrival.getHours() + totalHours).padStart(
-          2,
-          "0"
-        );
-        const finalMM = String(arrival.getMinutes() + finalMinutes).padStart(
-          2,
-          "0"
-        );
+        const hh = String(arrival.getHours()).padStart(2, "0");
+        const mm = String(arrival.getMinutes()).padStart(2, "0");
 
         document.getElementById(
           "result"
-        ).textContent = `You will arrive at: ${finalHH}:${finalMM}`;
+        ).textContent = `You will arrive at: ${hh}:${mm}`;
       }
 
       function clearFields() {
