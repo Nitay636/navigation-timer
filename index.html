@@ -32,10 +32,10 @@
       <div class="flex items-center gap-2 mb-4">
         <button
           onmousedown="startAdjust(-0.1)"
-          onmouseup="stopAdjust()"
-          onmouseleave="stopAdjust()"
+          onmouseup="stopAdjust(-0.1)"
+          onmouseleave="stopAdjust(-0.1)"
           ontouchstart="startAdjust(-0.1)"
-          ontouchend="stopAdjust()"
+          ontouchend="stopAdjust(-0.1)"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           −
@@ -52,10 +52,10 @@
 
         <button
           onmousedown="startAdjust(0.1)"
-          onmouseup="stopAdjust()"
-          onmouseleave="stopAdjust()"
+          onmouseup="stopAdjust(0.1)"
+          onmouseleave="stopAdjust(0.1)"
           ontouchstart="startAdjust(0.1)"
-          ontouchend="stopAdjust()"
+          ontouchend="stopAdjust(0.1)"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           +
@@ -133,15 +133,24 @@
       }
 
       let adjustInterval;
+      let adjustTimeout;
 
       function startAdjust(delta) {
-        adjustDistance(delta);
-        adjustInterval = setInterval(() => {
-          adjustDistance(delta);
-        }, 200);
+        // Start a timeout: if held, start interval after 400ms
+        adjustTimeout = setTimeout(() => {
+          adjustInterval = setInterval(() => {
+            adjustDistance(delta);
+          }, 150); // Repeat every 150ms
+        }, 300); // Wait 300ms before starting repeat
       }
 
-      function stopAdjust() {
+      function stopAdjust(delta) {
+        // If timeout exists, it was a short press: increment once
+        if (adjustTimeout) {
+          clearTimeout(adjustTimeout);
+          adjustDistance(delta);
+          adjustTimeout = null;
+        }
         clearInterval(adjustInterval);
       }
 
