@@ -15,6 +15,7 @@
         min-height: 44px;
         user-select: none;
         -webkit-user-select: none; /* For Safari */
+        touch-action: manipulation;
       }
     </style>
   </head>
@@ -159,13 +160,11 @@
       document.addEventListener(
         "touchend",
         function (event) {
-          if (event.target.tagName === "BUTTON") {
-            const now = new Date().getTime();
-            if (now - lastTouchEnd <= 300) {
-              event.preventDefault();
-            }
-            lastTouchEnd = now;
+          const now = new Date().getTime();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
           }
+          lastTouchEnd = now;
         },
         false
       );
