@@ -56,6 +56,7 @@
           min="0"
           placeholder="e.g. 4.0"
           class="flex-1 border border-gray-300 rounded p-2 text-center"
+          readonly
         />
 
         <button
@@ -65,6 +66,23 @@
         >
           +
         </button>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <input id="add-time-checkbox" type="checkbox" class="accent-blue-500" />
+        <label for="add-time-checkbox" class="text-gray-700 select-none"
+          >Add extra time</label
+        >
+        <input
+          id="extra-minutes"
+          type="number"
+          min="0"
+          step="1"
+          value="10"
+          class="w-20 border border-gray-300 rounded p-2 text-center"
+          style="margin-left: 8px"
+        />
+        <span class="text-gray-500">min</span>
       </div>
 
       <div class="flex gap-2">
@@ -118,9 +136,28 @@
         const hh = String(arrival.getHours()).padStart(2, "0");
         const mm = String(arrival.getMinutes()).padStart(2, "0");
 
+        let extraTime = 0;
+        if (document.getElementById("add-time-checkbox").checked) {
+          extraTime =
+            parseInt(document.getElementById("extra-minutes").value) || 0;
+        }
+
+        const totalMinutes = hoursNeeded * 60 + extraTime;
+        const totalHours = Math.floor(totalMinutes / 60);
+        const finalMinutes = totalMinutes % 60;
+
+        const finalHH = String(arrival.getHours() + totalHours).padStart(
+          2,
+          "0"
+        );
+        const finalMM = String(arrival.getMinutes() + finalMinutes).padStart(
+          2,
+          "0"
+        );
+
         document.getElementById(
           "result"
-        ).textContent = `You will arrive at: ${hh}:${mm}`;
+        ).textContent = `You will arrive at: ${finalHH}:${finalMM}`;
       }
 
       function clearFields() {
@@ -189,6 +226,38 @@
         },
         false
       );
+
+      // Long press to enable editing on distance input
+      (function setupDistanceLongPress() {
+        const input = document.getElementById("distance");
+        let timer = null;
+
+        const start = (e) => {
+          e.preventDefault();
+          timer = setTimeout(() => {
+            input.readOnly = false;
+            input.focus();
+            // Optionally, select all text for easier editing
+            input.select();
+          }, 400); // 400ms for long press
+        };
+
+        const end = () => {
+          clearTimeout(timer);
+        };
+
+        input.addEventListener("mousedown", start);
+        input.addEventListener("mouseup", end);
+        input.addEventListener("mouseleave", end);
+        input.addEventListener("touchstart", start, { passive: false });
+        input.addEventListener("touchend", end);
+        input.addEventListener("touchcancel", end);
+
+        // Set back to readonly when input loses focus
+        input.addEventListener("blur", () => {
+          input.readOnly = true;
+        });
+      })();
     </script>
   </body>
 </html>
