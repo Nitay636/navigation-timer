@@ -29,7 +29,11 @@
       >
       <div class="flex items-center gap-2 mb-4">
         <button
-          onclick="adjustDistance(-0.1)"
+          onmousedown="startAdjust(-0.1)"
+          onmouseup="stopAdjust()"
+          onmouseleave="stopAdjust()"
+          ontouchstart="startAdjust(-0.1)"
+          ontouchend="stopAdjust()"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           −
@@ -45,7 +49,11 @@
         />
 
         <button
-          onclick="adjustDistance(0.1)"
+          onmousedown="startAdjust(0.1)"
+          onmouseup="stopAdjust()"
+          onmouseleave="stopAdjust()"
+          ontouchstart="startAdjust(0.1)"
+          ontouchend="stopAdjust()"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           +
@@ -120,6 +128,19 @@
         let value = parseFloat(input.value) || 0;
         value = Math.max(0, Math.round((value + delta) * 10) / 10); // Keep 1 decimal
         input.value = value.toFixed(1);
+      }
+
+      let adjustInterval;
+
+      function startAdjust(delta) {
+        adjustDistance(delta);
+        adjustInterval = setInterval(() => {
+          adjustDistance(delta);
+        }, 100);
+      }
+
+      function stopAdjust() {
+        clearInterval(adjustInterval);
       }
 
       // Prevent double-tap to zoom on buttons
