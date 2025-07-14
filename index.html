@@ -9,6 +9,19 @@
     <title>Navigation Timer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+      html,
+      body,
+      * {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        user-select: none;
+        touch-action: manipulation;
+      }
+      input,
+      textarea {
+        -webkit-user-select: auto;
+        user-select: auto;
+      }
       input,
       button {
         font-size: 16px;
@@ -29,7 +42,8 @@
       >
       <div class="flex items-center gap-2 mb-4">
         <button
-          onclick="adjustDistance(-0.1)"
+          id="minus-btn"
+          type="button"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           −
@@ -45,7 +59,8 @@
         />
 
         <button
-          onclick="adjustDistance(0.1)"
+          id="plus-btn"
+          type="button"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-3 py-1 rounded"
         >
           +
@@ -121,6 +136,43 @@
         value = Math.max(0, Math.round((value + delta) * 10) / 10); // Keep 1 decimal
         input.value = value.toFixed(1);
       }
+
+      // Long press logic for plus/minus buttons
+      function setupLongPress(btnId, delta) {
+        const btn = document.getElementById(btnId);
+        let timer = null;
+        let interval = null;
+        let isLongPress = false;
+
+        const start = (e) => {
+          e.preventDefault();
+          isLongPress = false;
+          timer = setTimeout(() => {
+            isLongPress = true;
+            interval = setInterval(() => adjustDistance(delta), 80);
+          }, 400); // 400ms to start long press
+        };
+
+        const end = (e) => {
+          clearTimeout(timer);
+          clearInterval(interval);
+          if (!isLongPress) {
+            adjustDistance(delta);
+          }
+        };
+
+        btn.addEventListener("mousedown", start);
+        btn.addEventListener("mouseup", end);
+        btn.addEventListener("mouseleave", end);
+
+        // Use { passive: false } for touch events so preventDefault works on iOS
+        btn.addEventListener("touchstart", start, { passive: false });
+        btn.addEventListener("touchend", end);
+        btn.addEventListener("touchcancel", end);
+      }
+
+      setupLongPress("minus-btn", -0.1);
+      setupLongPress("plus-btn", 0.1);
 
       // Prevent double-tap to zoom on buttons
       let lastTouchEnd = 0;
