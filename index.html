@@ -121,6 +121,22 @@
         value = Math.max(0, Math.round((value + delta) * 10) / 10); // Keep 1 decimal
         input.value = value.toFixed(1);
       }
+
+      // Prevent double-tap to zoom on buttons
+      let lastTouchEnd = 0;
+      document.addEventListener(
+        "touchend",
+        function (event) {
+          if (event.target.tagName === "BUTTON") {
+            const now = new Date().getTime();
+            if (now - lastTouchEnd <= 300) {
+              event.preventDefault();
+            }
+            lastTouchEnd = now;
+          }
+        },
+        false
+      );
     </script>
   </body>
 </html>
